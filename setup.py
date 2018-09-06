@@ -98,6 +98,7 @@ setup(
     author='Stefan Mautner',
     author_email='myl4stn4m3@cs.uni-freiburg.de',
     packages=['structout'],
+    python_requires='>=3.4',
     scripts=[ ],
     include_package_data=True,
     package_data={},
