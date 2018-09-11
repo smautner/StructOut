@@ -186,9 +186,16 @@ def make_picture(g,
 
     if type(g) != list:
         g = [g]
+        color = [color]
+    else:
+        # g is already a list
+        if type(color) !=list:
+            color = [color]*len(g)
 
-    g = list(map(lambda x: set_print_symbol(x, colorstyle=color, nodelabel=nodelabel, edgelabel=edgelabel), g))
-    g = map(lambda x: nx_to_ascii(x, size=size, debug=debug, colorstyle=color, pos=pos), g)
+
+
+    g = list(map(lambda x, col: set_print_symbol(x, colorstyle=col, nodelabel=nodelabel, edgelabel=edgelabel), g, color))
+    g = map(lambda x,col: nx_to_ascii(x, size=size, debug=debug, colorstyle=col, pos=pos), g, color)
     return makerows(list(g), n_graphs_per_line=n_graphs_per_line)
 
 
