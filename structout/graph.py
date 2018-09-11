@@ -103,8 +103,10 @@ def nx_to_ascii(graph,
 
 
     # draw nodes
-    def write_on_canvas(x,y,text):
+    def write_on_canvas(x,y,text, nooverwrite=False):
         for e in text:
+            if nooverwrite and canvas[y][x] != ' ':
+                break
             canvas[y][x] = e
             if x < xmax:
                 x += 1
@@ -122,10 +124,9 @@ def nx_to_ascii(graph,
         ax, ay = pos[a]
         bx, by = pos[b]
 
-        if canvas[(ay+by)//2][(ax+bx)//2] == ' ':
-            #edgelabel
-            if d.get('asciisymbol',None) != None:
-                write_on_canvas( (ax+bx)//2 , (ay+by)//2 ,d['asciisymbol'])
+        #edgelabel
+        if d.get('asciisymbol',None) != None:
+            write_on_canvas( (ax+bx)//2 , (ay+by)//2 ,d['asciisymbol'], nooverwrite=True)
 
         resolution = max(3, int(math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)))
         dx = float((bx - ax)) / resolution
