@@ -16,47 +16,38 @@ def color(symbol, col='red', colordict={'black': 0, 'red': 1,
     return ['\x1b[1;3%d;48m%s\x1b[0m' % (colordict[col], e) for e in symbol]
 
 
-def defaultcolor(d, edge=False):
-    '''colors that are useful for graphlearn'''
-
-    if edge:
-        return "blue"
-
-    if 'core' in d:
-        return 'cyan'
-    elif 'interface' in d:
-        return 'magenta'
-    elif 'edge' in d: # this is if edge is a node attribute. .. happens when eden expands a graph
-        return 'blue'
-    else:
-        return 'red'
 
 
-def set_print_symbol(g, bw=False, label='label', colorlabel=None, edgelabel=None, edgecolorlabel=None):
-    '''
-    :param g:  networkx graph
-    :param bw: draw in black/white
-    :param label:  g.node[label] is used, if not found, node id
-    :param colorlabel:  use this color, if none use defaultcolor function
-    :return:
-        networkx graph, nodes have 'asciisymbol' annotation
-    '''
 
-    def setcolor(symbol,d, label, colorlabel, edge=False):
-        if bw:
-            d['asciisymbol'] = symbol
-        elif colorlabel:
-            d['asciisymbol'] = color(symbol, d[colorlabel])
-        else:
-            d['asciisymbol'] = color(symbol, defaultcolor(d,edge=edge))
+def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label'):
 
-    for n, d in g.nodes(data=True):
-       setcolor(str(d.get(label,n)),d,label, colorlabel)
 
-    if edgelabel != None:
-        for a,b,d in g.edges(data=True):
-            if d.get(edgelabel,None):
-                setcolor(d[edgelabel], d, edgelabel, edgecolorlabel, edge=True)
+    if type(colorstyle) == str:
+        if colorstyle == "bw": # white
+
+            for n, d in g.nodes(data=True):
+               d['asciisymbol'] = d.get(nodelabel,str(n))
+
+            if edgelabel != None:
+                for a,b,d in g.edges(data=True):
+                    if d.get(edgelabel,None):
+                        d['asciisymbol'] = d[edgelabel]
+
+        else: # default color
+
+            for n, d in g.nodes(data=True):
+               d['asciisymbol'] = color(d.get(nodelabel, str(n)), 'red')
+
+            if edgelabel != None:
+                for a,b,d in g.edges(data=True):
+                    if d.get(edgelabel,None):
+                        d['asciisymbol'] = color(d[edgelabel], 'blue')
+
+
+    else: # colorlists
+       for nodes, col in zip (colorstyle, ["magenta", "cyan", "yellow", "red", "blue", "green"]):
+           for n in nodes:
+               g.node[n]['asciisymbol'] = color(g.node[n].get(nodelabel,str(n)), col)
 
 
 
@@ -90,9 +81,8 @@ def transform_coordinates(pos,ymax,xmax):
 def nx_to_ascii(graph,
                 size=10,
                 debug=None,
-                bw=False,
-                pos=None,
-                edgecolorlabel='edgecolorlabel'):
+                colorstyle='normal',
+                pos=None):
     '''
         debug would be a path to the folder where we write the dot file.
         in: nxgraph
@@ -128,8 +118,15 @@ def nx_to_ascii(graph,
 
     # draw edges
     for a, b,d in graph.edges(data=True):
+
         ax, ay = pos[a]
         bx, by = pos[b]
+
+        if canvas[(ay+by)//2][(ax+bx)//2] == ' ':
+            #edgelabel
+            if d.get('asciisymbol',None) != None:
+                write_on_canvas( (ax+bx)//2 , (ay+by)//2 ,d['asciisymbol'])
+
         resolution = max(3, int(math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)))
         dx = float((bx - ax)) / resolution
         dy = float((by - ay)) / resolution
@@ -138,14 +135,12 @@ def nx_to_ascii(graph,
             x = int(ax + dx * step)
             y = int(ay + dy * step)
             if canvas[y][x] == ' ':
-                canvas[y][x] = "." if bw else color('.', col=graph[a][b].get(edgecolorlabel,'black'))[0]
+                canvas[y][x] = "." if colorstyle=='bw' else color('.', 'black')[0]
                 lastwritten_edge=(y,x)
-        if lastwritten_edge and not bw and type(graph)==nx.DiGraph:
+
+        if lastwritten_edge and colorstyle != 'bw' and type(graph)==nx.DiGraph:
                 canvas[lastwritten_edge[0]][lastwritten_edge[1]] = color('.', col='blue')[0]
 
-        #edgelabel
-        if d.get('asciisymbol',None) != None:
-            write_on_canvas( (ax+bx)//2 , (ay+by)//2 ,d['asciisymbol'])
 
     canvas = '\n'.join([''.join(e) for e in canvas])
     if debug:
@@ -159,17 +154,6 @@ def nx_to_ascii(graph,
 ######
 # contract and horizontalize
 ######
-
-def contract_graph(graph):
-    '''convenience for graphlearn/eden'''
-    import eden.graph as eg
-    graph = eg._revert_edge_to_vertex_transform(graph)
-    return graph
-
-
-def transpose(things):
-    return map(list, zip(*things))
-
 
 def makerows(graph_canvazes, n_graphs_per_line=5):
 
@@ -191,36 +175,19 @@ def makerows(graph_canvazes, n_graphs_per_line=5):
 #######
 
 def make_picture(g,
-                 bw=False,
-                 colorlabel=None,
-                 contract=False,
-                 label='label',
+                 color="normal",
+                 nodelabel='label',
+                 edgelabel='label',
                  size=10,
                  debug=None,
                  pos=None,
-                 edgecolorlabel=None,
-                 n_graphs_per_line= 5,
-                 edgelabel=None):
-    '''
+                 n_graphs_per_line= 5):
 
-    :param g:  network x graph
-    :param bw:  black/white bool
-    :param colorlabel: node-dict key that contains the desired color
-    :param contract:
-    :param label:  node dict key containing the symbol to print, default is 'label', node-if if label is none
-    :param size:  size on in y dimension
-    :param debug:  where to dump debug files, off if none
-    :return:
-        a string
-    '''
     if type(g) != list:
         g = [g]
 
-    if contract:
-        g = map(contract_graph, g)
-
-    g = map(lambda x: set_print_symbol(x, bw=bw, label=label, colorlabel=colorlabel, edgecolorlabel=edgecolorlabel, edgelabel=edgelabel), g)
-    g = map(lambda x: nx_to_ascii(x, size=size, debug=debug, bw=bw, pos=pos,edgecolorlabel=edgecolorlabel), g)
+    g = list(map(lambda x: set_print_symbol(x, colorstyle=color, nodelabel=nodelabel, edgelabel=edgelabel), g))
+    g = map(lambda x: nx_to_ascii(x, size=size, debug=debug, colorstyle=color, pos=pos), g)
     return makerows(list(g), n_graphs_per_line=n_graphs_per_line)
 
 
@@ -242,10 +209,12 @@ def ginfo(g):
 
 # test
 if __name__ == "__main__":
-    graph = nx.path_graph(11)
+    graph = nx.path_graph(5)
     gprint(graph)
     graph[3][4]['label']='brot'
-    gprint(graph, edgelabel='label')
+    graph.node[0]['label']='null'
+    gprint(graph)
+    gprint(graph, color=([1,2,3],[4,0]))
     ginfo(graph)
 
 ''' 
