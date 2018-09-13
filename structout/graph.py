@@ -45,9 +45,13 @@ def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label
 
 
     else: # colorlists
-       for nodes, col in zip (colorstyle, ["magenta", "cyan", "yellow", "red", "blue", "green"]):
+        for nodes, col in zip (colorstyle, ["magenta", "cyan", "yellow", "red", "blue", "green"]):
            for n in nodes:
                g.node[n]['asciisymbol'] = color(g.node[n].get(nodelabel,str(n)), col)
+        for n,d in g.nodes(data=True):
+            if "asciisymbol" not in d:
+                g.node[n]['asciisymbol'] = color(g.node[n].get(nodelabel,str(n)), 'black')
+
 
 
 
