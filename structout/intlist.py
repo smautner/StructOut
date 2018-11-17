@@ -56,7 +56,7 @@ def decorate_number(num):
 def resize_number_array(values, desired_length,chunk_operation=max):
     length=len(values)
     size= float(length)/desired_length
-    values = [  chunk_operation(values[ int(i*size): int(math.ceil((i+1)*size))   ] )  for i in xrange(desired_length)]
+    values = [  chunk_operation(values[ int(i*size): int(math.ceil((i+1)*size))   ] )  for i in range(desired_length)]
     return values
 
 
@@ -73,7 +73,7 @@ def resize_number_dict(posdict, desired_length,chunk_operation=max):
     maxx =max(posdict)
     length= maxx-minn
     size= float(length)/desired_length
-    posdict = [chunk_operation([0]+access_region(posdict, int(i*size)+minn, int(math.ceil(i+1)*size+minn))) for i in xrange(desired_length)]
+    posdict = [chunk_operation([0]+access_region(posdict, int(i*size)+minn, int(math.ceil(i+1)*size+minn))) for i in range(desired_length)]
     return posdict
 
 
