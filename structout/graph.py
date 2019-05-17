@@ -26,7 +26,7 @@ def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label
         if colorstyle == "bw": # white
 
             for n, d in g.nodes(data=True):
-               d['asciisymbol'] = d.get(nodelabel,str(n))
+               d['asciisymbol'] = str(d.get(nodelabel,n))
 
             if edgelabel != None:
                 for a,b,d in g.edges(data=True):
@@ -36,7 +36,7 @@ def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label
         else: # default color
 
             for n, d in g.nodes(data=True):
-               d['asciisymbol'] = color(d.get(nodelabel, str(n)), 'red')
+               d['asciisymbol'] = color( str(d.get(nodelabel, n)), 'red')
 
             if edgelabel != None:
                 for a,b,d in g.edges(data=True):
@@ -47,15 +47,10 @@ def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label
     else: # colorlists
         for nodes, col in zip (colorstyle, ["magenta", "cyan", "yellow", "red", "blue", "green"]):
            for n in nodes:
-               g.node[n]['asciisymbol'] = color(g.node[n].get(nodelabel,str(n)), col)
+               g.node[n]['asciisymbol'] = color(str(   g.node[n].get(nodelabel,n)), col)
         for n,d in g.nodes(data=True):
             if "asciisymbol" not in d:
-                g.node[n]['asciisymbol'] = color(g.node[n].get(nodelabel,str(n)), 'black')
-
-
-
-
-
+                g.node[n]['asciisymbol'] = color(  str( g.node[n].get(nodelabel,n)), 'black')
     return g
 
 
