@@ -65,8 +65,8 @@ def transform_coordinates(pos,ymax,xmax):
     weird_maxy = max([y for (x, y) in pos.values()])
     weird_miny = min([y for (x, y) in pos.values()])
 
-    xfac = float((weird_maxx - weird_minx)) / xmax
-    yfac = float((weird_maxy - weird_miny)) / ymax
+    xfac = (float((weird_maxx - weird_minx)) / xmax )or 1
+    yfac = (float((weird_maxy - weird_miny)) / ymax )or 1
     for key in pos.keys():
         wx, wy = pos[key]
         pos[key] = (int((wx - weird_minx) / xfac), int((wy - weird_miny) / yfac))
