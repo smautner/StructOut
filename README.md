@@ -23,3 +23,13 @@ so.gprint(g)
 ![''](https://raw.githubusercontent.com/smautner/StructOut/master/example.png)
 
 
+
+### on colors
+
+```python
+# this will color nodes 1,2,3 in one color and 4,0 in another
+gprint(graph, color=([1,2,3],[4,0]))
+```
+
+-  edge labels are always blue
+-  digraphs should mark the direction with a blue dot 
