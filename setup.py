@@ -102,7 +102,7 @@ setup(
     scripts=[ ],
     include_package_data=True,
     package_data={},
-    url='https://github.com/smautner/StructOut',
+    url='https://github.com/smautner/StructOut_py3',
     license='GPLv3',
     description='pretty print data structures',
     #long_description=open('README.md').read(),
