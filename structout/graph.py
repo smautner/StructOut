@@ -1,7 +1,7 @@
 import math
 import networkx as nx
 from pprint import pprint
-
+from networkx.algorithms.shortest_paths.unweighted import _single_shortest_path_length as short_paths
 
 
 #########
@@ -166,6 +166,8 @@ def make_picture(g,
                  size=10,
                  debug=None,
                  pos=None,
+                 zoomlevel = 4,
+                 zoomnodes = [],
                  n_graphs_per_line= 5):
 
 
@@ -174,10 +176,14 @@ def make_picture(g,
     if type(g) != list:
         g = [g]
         color = [color]
+        zoomnodes= [zoomnodes]
     else:
         # g is already a list
         if type(color) !=list:
             color = [color]*len(g)
+
+    # ZOOM 
+    g = list(map( lambda gr, no: do_zoom(gr,zoomlevel,no) ,g,zoomnodes))
 
     # set colors
     g = list(map(lambda x, col: set_print_symbol(x, colorstyle=col, nodelabel=nodelabel, edgelabel=edgelabel), g, color))
@@ -187,6 +193,13 @@ def make_picture(g,
 
     # group pictures into rows
     return makerows(list(g), n_graphs_per_line=n_graphs_per_line)
+
+
+def do_zoom(gr,zoomlevel, no):
+    if not no:
+        return gr 
+    oklist = [a for (a, b) in short_paths(gr,no, zoomlevel)]
+    return gr.subgraph(oklist)
 
 #################################
 #  down here is utility stuff
