@@ -40,3 +40,15 @@ gprint(graph, color=([1,2,3],[4,0]))
 # print nodes with max distance 1 to the nodes 1 and 2 
 gprint(graph, zoomlevel=1, zoomnodes=[1,2]) 
 ```
+
+
+### other options 
+
+```python
+nodelabel='label',  # node and edge labels
+edgelabel='label',
+size=10,            # size
+pos=None,           # pass a coordinate dictionary ; {nodeid : x,y} 
+n_graphs_per_line= 5 # when passing multiple graphs, wrap here
+```
+
