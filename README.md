@@ -33,3 +33,10 @@ gprint(graph, color=([1,2,3],[4,0]))
 
 -  edge labels are always blue
 -  digraphs should mark the direction with a blue dot 
+
+### cut graph down to a subgraph 
+
+```python
+# print nodes with max distance 1 to the nodes 1 and 2 
+gprint(graph, zoomlevel=1, zoomnodes=[1,2]) 
+```
