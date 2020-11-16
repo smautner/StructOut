@@ -106,6 +106,8 @@ setup(
     license='GPLv3',
     description='pretty print data structures',
     #long_description=open('README.md').read(),
-    install_requires=[],
+    install_requires=[
+        "networkx","pygraphviz"
+    ],
     cmdclass={'sdist': sdist, 'install': install}
 )
