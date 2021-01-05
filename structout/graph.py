@@ -181,6 +181,13 @@ def make_picture(g,
         # g is already a list
         if type(color) !=list:
             color = [color]*len(g)
+        if len(zoomnodes) == 0:
+            zoomnodes= [[]]*len(g)
+        else:
+            print("zoomnodes not supported for multiple graphs")
+
+        
+
 
     # ZOOM 
     g = list(map( lambda gr, no: do_zoom(gr,zoomlevel,no) ,g,zoomnodes))
@@ -249,6 +256,7 @@ if __name__ == "__main__":
     # grouping nodes for coloring ..
     gprint(graph, color=([1,2,3],[4,0]))
     ginfo(graph)
+    gprint([graph,graph,graph])
 
 ''' 
 getting coordinates of molecules...  the molecule thing should be in the eden package afair
