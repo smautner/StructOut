@@ -1,4 +1,4 @@
-
+from scipy.sparse import csr_matrix as csr
 import math
 
 
@@ -100,9 +100,19 @@ def dprint(posdict,length=80, chunk_operation=max):
 def lprint(posdict,length=80, chunk_operation=max):
     print (numberlist_to_str(posdict,length, chunk_operation=chunk_operation))
 
+
+
+def npprint(thing, length=80, chunk_operation=max):
+    thing = csr(thing) 
+    for row in thing:
+        intlist = row.todense().tolist()[0]
+        lprint(intlist,length,chunk_operation)
+
 if __name__ == "__main__":
     lprint(range(1000))
     dprint({x:x for x in range(1000)})
-
+    import numpy as np 
+    z=np.random.rand(3,300)*10
+    npprint(z)
 
 

@@ -1,4 +1,4 @@
 
 
 from structout.graph import gprint
-from structout.intlist import lprint, dprint
+from structout.intlist import lprint, dprint, npprint
