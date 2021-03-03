@@ -12,6 +12,7 @@ so.lprint(range(1000),length=70)
 
 so.dprint({x*x:x for x in range(1000) }) # sparse datatype
 so.dprint({x*x:x for x in range(1000) }, chunk_operation=len) # count elements oO
+so.npprint() # prints 2d lists, np.array, csr_matrix etc
 
 import networkx as nx
 g=nx.path_graph(5)

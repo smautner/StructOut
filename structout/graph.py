@@ -99,7 +99,9 @@ def nx_to_ascii(graph,
     # layout
     if not pos:
         #pos = nx.graphviz_layout(graph, prog='neato', args="-Gratio='2'")
-        pos=nx.drawing.nx_agraph.graphviz_layout(graph, prog='neato', args="-Gratio='2'")
+        #pos=nx.drawing.nx_agraph.graphviz_layout(graph, prog='neato', args="-Gratio='2'")
+        pos=nx.spring_layout(graph)
+
     pos= transform_coordinates(pos,ymax,xmax)
 
 
