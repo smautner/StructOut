@@ -7,25 +7,33 @@ prints networkx graphs and large int lists pleasantly to terminal.
 ```python
 
 import structout as so
-
 so.lprint(range(1000),length=70)
-
-so.dprint({x*x:x for x in range(1000) }) # sparse datatype
-so.dprint({x*x:x for x in range(1000) }, chunk_operation=len) # count elements oO
-so.npprint() # prints 2d lists, np.array, csr_matrix etc
 
 import networkx as nx
 g=nx.path_graph(5)
 so.gprint(g)
 
-
 ```
 
 ![''](https://raw.githubusercontent.com/smautner/StructOut/master/example.png)
 
+## numberlists 
 
+```
 
-### on colors
+# implemented options: 
+def doALine(values,
+        length=-1,minmax=False, chunk_operation=max, 
+        method = 'log', methodhow =2)
+
+# there is also a convenience function 'bins' that 
+# does evenly spaced out bins :) 
+
+```
+
+## Graphs
+
+### Colors
 
 ```python
 # this will color nodes 1,2,3 in one color and 4,0 in another
