@@ -30,20 +30,18 @@ def resize_number_array(values, desired_length,chunk_operation=max):
 # COMPRESS -> fit the value in a neat integer
 ###############
 
-def digitize(values, method = 'log', methodarg = 2): 
+def digitize(values, method = 'log', methodarg = 2, binminmax=(0,1)): 
     if method == 'log':
          return [ int(math.log(i,methodarg)) for i in values]
     if method == 'bins':
-        return bins(values,methodarg)
+        return bins(values,methodarg, minmax=binminmax)
 
 
 
-def bins(values,count):
-        mi=min(values)
-        ma=max(values)
+def bins(values,count, minmax = (0,1)):
+        mi, ma = minmax
         bins = np.arange(mi,ma+.0001,(ma-mi)/(count))
         bins[-1]+=.0001
-        #print(bins)
         return np.digitize(values,bins)-1
 
     
@@ -54,7 +52,8 @@ def bins(values,count):
 
 def decorate(values): 
     # there are 8 colors, so we distribute them over the space of used chars
-    colors = bins(values,8)
+    minmax= min(values),max(values)
+    colors = bins(values,8,minmax)
     return map(colorize_number,values,colors)
 
 def colorize_number(number, col):
@@ -80,19 +79,22 @@ def str_to(n):
 
 def doALine(values,
         length=-1,minmax=False, chunk_operation=max, 
-        method = 'log', methodhow =2):
+        method = 'log', methodhow =2, ylim=False):
+
     if length < 0:
         length = os.get_terminal_size().columns
 
+    vminmax = (min(values),max(values)) if not ylim else ylim
+
     if minmax:
-        pre = str_to(min(values))+"|"
-        post = "|"+str_to(max(values))
+        pre = str_to(vminmax[0])+"|"
+        post = "|"+str_to(vminmax[1])
     else:
         pre,post = '',''
 
     space = min(len(values), length-len(pre+post))
     values = resize_number_array(values,space,chunk_operation)
-    values = digitize(values,method,methodhow)
+    values = digitize(values,method,methodhow, binminmax=vminmax)
     values = decorate(values)
 
     return pre+''.join(values)+post
@@ -112,7 +114,8 @@ def npprint(thing, **kwargs):
 if __name__ == "__main__":
     lprint(range(1000), method = 'bins', methodhow=16)
     lprint(range(1000), method ='log', methodhow=2)
-    z=np.random.rand(3,300)
+    z=np.random.rand(2,300)
+    npprint(z,minmax=True, method='bins',methodhow=16, ylim=[0,1])
     npprint(z,minmax=True, method='bins',methodhow=16)
 
 
