@@ -104,19 +104,20 @@ def lprint(values,**kwargs):
     print (doALine(values,**kwargs))
 
 
-def npprint(thing, **kwargs):
+def npprint(thing,shareylim=True, **kwargs):
     thing = csr(thing) 
+    ylim = thing.max(), thing.min()
     for row in thing:
         intlist = row.todense().tolist()[0]
-        lprint(intlist,**kwargs)
+        lprint(intlist,ylim=ylim,**kwargs)
 
 
 if __name__ == "__main__":
     lprint(range(1000), method = 'bins', methodhow=16)
     lprint(range(1000), method ='log', methodhow=2)
     z=np.random.rand(2,300)
-    npprint(z,minmax=True, method='bins',methodhow=16, ylim=[0,1])
     npprint(z,minmax=True, method='bins',methodhow=16)
+    npprint(z,minmax=True, method='bins',methodhow=16, ylim=[0,1])
 
 
 
