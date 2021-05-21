@@ -106,10 +106,11 @@ def lprint(values,**kwargs):
 
 def npprint(thing,shareylim=True, **kwargs):
     thing = csr(thing) 
-    ylim = thing.max(), thing.min()
+    if shareylim:
+        kwargs['ylim'] = thing.min(), thing.max()
     for row in thing:
         intlist = row.todense().tolist()[0]
-        lprint(intlist,ylim=ylim,**kwargs)
+        lprint(intlist,**kwargs)
 
 
 if __name__ == "__main__":
