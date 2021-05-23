@@ -21,7 +21,7 @@ so.gprint(g)
 
 ```
 
-# implemented options: 
+# implemented options: -> i should update this at some point :)
 def doALine(values,
         length=-1,minmax=False, chunk_operation=max, 
         method = 'log', methodhow =2)
