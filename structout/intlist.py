@@ -22,6 +22,8 @@ then there is the numpy mode :)
 
 def resize_number_array(values, desired_length,chunk_operation=max):
     length=len(values)
+    if length <=desired_length:
+        return values
     size= float(length)/desired_length
     values = [  chunk_operation(values[ int(i*size): int(math.ceil((i+1)*size))   ] )  for i in range(desired_length)]
     return values
@@ -32,9 +34,11 @@ def resize_number_array(values, desired_length,chunk_operation=max):
 
 def digitize(values, method = 'log', methodarg = 2, binminmax=(0,1)): 
     if method == 'log':
-         return [ int(math.log(i,methodarg)) for i in values]
+        return [ int(math.log(i,methodarg)) for i in values]
     if method == 'bins':
         return bins(values,methodarg, minmax=binminmax)
+    if method =='raw':
+        return values
 
 
 
@@ -68,31 +72,58 @@ def colorize_number(number, col):
 # letzgo 
 ###########
 
-def str_to(n):
-
-    if -10 < n < 10: 
-        if isinstance(n,int):
-            return str(n)
+def str_to(n, dtype):
+    if dtype == 'int':
+        return str(n)
+    if -10 < n < 10:
         return f"{n:.1}"
     else:
         return str(int(n))
 
-def doALine(values,
-        length=-1,minmax=False, chunk_operation=max, 
-        method = 'log', methodhow =2, ylim=False):
 
+
+def doALine(values,
+        length=-1,
+        minmax=False, 
+        ylim=False,
+        chunk_operation=max, 
+        debug = False,
+        method = 'auto', 
+        methodhow = 16 ):
+    
+
+    ############
+    # determine how to squish numbers :) 
+    ###########
+    values = np.array(values)
+    dtype = 'float' if 'float' in str(values.dtype) else 'int'
+    if method == 'auto':
+        if min(values) < 0 or dtype =='float': 
+            method = 'bins'
+        elif max(values) >= methodhow: 
+            method = 'log'
+            values +=1
+            methodhow = 2
+        else:
+            method = 'raw'
+
+
+
+    #############
+    # detetermine number of characters we need to squish the numbers into
+    ############
     if length < 0:
         length = os.get_terminal_size().columns
 
-    vminmax = (min(values),max(values)) if not ylim else ylim
-
+    vminmax = (values.min(),values.max()) if not ylim else ylim
     if minmax:
-        pre = str_to(vminmax[0])+"|"
-        post = "|"+str_to(vminmax[1])
+        pre = str_to(vminmax[0],dtype)+"|"
+        post = "|"+str_to(vminmax[1],dtype)
     else:
         pre,post = '',''
-
     space = min(len(values), length-len(pre+post))
+
+
     values = resize_number_array(values,space,chunk_operation)
     values = digitize(values,method,methodhow, binminmax=vminmax)
     values = decorate(values)
@@ -108,23 +139,21 @@ def npprint(thing,shareylim=True, **kwargs):
     thing = csr(thing) 
     if shareylim:
         kwargs['ylim'] = thing.min(), thing.max()
-    for row in thing:
-        intlist = row.todense().tolist()[0]
-        lprint(intlist,**kwargs)
+
+    for i in range(thing.shape[0]):
+        a  = thing.getrow(i).todense().getA1()
+        lprint(a,**kwargs)
+
 
 
 if __name__ == "__main__":
-    lprint(range(1000), method = 'bins', methodhow=16)
-    lprint(range(1000), method ='log', methodhow=2)
+    lprint(range(1000), method = 'auto')
+    lprint(range(16), method ='auto')
+
     z=np.random.rand(2,300)
     npprint(z,minmax=True, method='bins',methodhow=16)
-    npprint(z,minmax=True, method='bins',methodhow=16, ylim=[0,1])
-
-
-
-
-
-
+    z*=100
+    npprint(z.astype(np.int64) ,minmax=True, method='bins',methodhow=16)
 
 
 
