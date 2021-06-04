@@ -44,7 +44,7 @@ def digitize(values, method = 'log', methodarg = 2, binminmax=(0,1)):
 
 def bins(values,count, minmax = (0,1)):
         mi, ma = minmax
-        bins = np.arange(mi,ma+.0001,(ma-mi)/(count))
+        bins = np.arange(mi,ma+.0001,((ma+.0001)-mi)/(count))
         bins[-1]+=.0001
         return np.digitize(values,bins)-1
 
