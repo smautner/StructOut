@@ -82,6 +82,12 @@ def str_to(n, dtype):
 
 
 
+def getcolumns(): 
+    try:
+        return os.get_terminal_size().columns
+    except:
+        return 100
+
 def doALine(values,
         length=-1,
         minmax=False, 
@@ -113,8 +119,7 @@ def doALine(values,
     # detetermine number of characters we need to squish the numbers into
     ############
     if length < 0:
-        length = os.get_terminal_size().columns
-
+        length = getcolumns()
     vminmax = (values.min(),values.max()) if not ylim else ylim
     if minmax:
         pre = str_to(vminmax[0],dtype)+"|"
