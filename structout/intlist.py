@@ -165,7 +165,7 @@ if __name__ == "__main__":
 # i am rewriring this now  and this is not a current usecase
 # the solution should be to use csr_sparse in the future
 #############
-def dprint(posdict,length=80, chunk_operation=max):
+def dprint(posdict,length=100, chunk_operation=max):
     print (numberdict_to_str(posdict,length, chunk_operation=chunk_operation))
 
 def access_region(d,start,end):
@@ -186,8 +186,8 @@ def resize_number_dict(posdict, desired_length,chunk_operation=max):
 
 
 def numberdict_to_str(ndict, dlength,chunk_operation=max):
-    ret = map(decorate_number, resize_number_dict(ndict, desired_length=dlength,chunk_operation=chunk_operation))
-    return ''.join(ret)
+    ret =  resize_number_dict(ndict, desired_length=dlength,chunk_operation=chunk_operation)
+    return "".join((decorate(ret)))
 
 
 ########3
@@ -218,6 +218,7 @@ def int_to_log2chr(i):
     else:
         z= int(math.log(i,2))
         return z if z <=9 else chr(z+55)
+
 def decorate_number(num):
     '''
     :param num:  integer

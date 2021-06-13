@@ -40,10 +40,10 @@ def update_version_py():
         return
     ver = "0.1."+stdout.strip()
     #ver = str(int(ver,16)) # pypi doesnt like base 16
-    f = open("structout/_version.py", "w")
+    f = open("structout/__version__.py", "w")
     f.write(VERSION_PY % ver)
     f.close()
-    print("set structout/_version.py to '%s'" % ver)
+    print("set structout/__version__.py to '%s'" % ver)
 
 
 def get_version():
