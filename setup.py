@@ -30,13 +30,13 @@ def update_version_py():
 
 
     except EnvironmentError:
-        print("unable to run git, leaving structout/_version.py alone")
+        print("unable to run git, leaving structout/__version__.py alone")
         return
     stdout = p.communicate()[0].decode("utf-8")
 
     print ("stdout:",stdout)
     if p.returncode != 0:
-        print("unable to run git, leaving structout/_version.py alone")
+        print("unable to run git, leaving structout/__version__.py alone")
         return
     ver = "0.1."+stdout.strip()
     #ver = str(int(ver,16)) # pypi doesnt like base 16
@@ -48,7 +48,7 @@ def update_version_py():
 
 def get_version():
     try:
-        f = open("structout/_version.py")
+        f = open("structout/__version__.py")
     except EnvironmentError:
         return None
     for line in f.readlines():
