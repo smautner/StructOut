@@ -25,7 +25,7 @@ def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label
     g.graph[xx] are settings for how the lines between nodes (or edge-labels) are drawn
     node/edege['asciisymbol']  is what is the label how it will be drawn
     '''
-    g.graph['generic edge'] =  "." if colorstyle=='bw' else color('.', 'black')[0]
+    g.graph['generic edge'] =  "." if colorstyle=='bw' else color('.', 'gray')[0]
     g.graph['digraphend'] =  color('.', col='blue')[0]
     g.graph['colored'] = colorstyle!='bw'
 

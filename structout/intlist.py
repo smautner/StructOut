@@ -76,7 +76,7 @@ def str_to(n, dtype):
     if dtype == 'int':
         return str(n)
     if -10 < n < 10:
-        return f"{n:.1}"
+        return f"{n:.3}"
     else:
         return str(int(n))
 
