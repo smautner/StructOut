@@ -7,13 +7,13 @@ import math
     rewriting to have better code..
     does not have all the features of intlist yet i think...
 """
-def doALine(values, log = False, chunkF = max, symbols =  '▁▂▃▄▅▆▇█', colors = '0467', ylim = False):
+def doALine(values, log = False, chunkF = max, symbols =  '▁▂▃▄▅▆▇█', colors = '0467', ylim = False, characterlimit = 99999):
     '''
         ylim should be in htere in case we print many lines
     '''
     # how many digits can we use?
     values = np.array(values)
-    pre, post, space  = preprocess(values)
+    pre, post, space  = determine_characterlimit(values, characterlimit)
     values = horizontalsquish(values, space, chunkF)
 
     if log:
@@ -26,7 +26,7 @@ def doALine(values, log = False, chunkF = max, symbols =  '▁▂▃▄▅▆▇
 
 
 ##########################
-def preprocess(values):
+def determine_characterlimit(values, characterlimit):
     '''
     return:
         pre and post strings and how many characters we can actually use for output
@@ -35,6 +35,7 @@ def preprocess(values):
     post = "|"+str_to(values.max())
 
     maxlength = getcolumns()-len(pre+post)
+    characterlimit -= len(pre+post)
     space = min(maxlength, len(values))
     return pre, post, space
 
