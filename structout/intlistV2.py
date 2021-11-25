@@ -91,21 +91,26 @@ def colorize(chr, col):
     return '\x1b[1;3%s;48m%s\x1b[0m' % (col, chr)
 
 
-
-
 def lprint(values,**kwargs):
     print (doALine(values,**kwargs))
 
 def npprint(thing,shareylim=True, **kwargs):
     thing = csr(thing)
-
     if shareylim:
         kwargs['ylim'] = thing.min(), thing.max()
-
     for i in range(thing.shape[0]):
         a  = thing.getrow(i).todense().getA1()
         lprint(a,**kwargs)
 
+def iprint(dic:dict,bins:int = 1000,  **kwargs): # indiscrete print
+    keys = np.array(list(dic.keys()))
+    discrete = np.digitize(keys, bins=np.linspace(min(keys), max(keys), bins ) )
+
+    base = [min(dic.values())]*(bins+1)
+    for k,e in zip(keys,discrete):
+        base[e]=dic[k]
+
+    lprint(base, **kwargs)
 
 if __name__ == "__main__":
     lprint(range(1000))
@@ -115,6 +120,8 @@ if __name__ == "__main__":
     z*=100
     npprint(z.astype(np.int64))
     npprint(z.astype(np.int64), log=True)
+    d={0:3, 0.3:6,4:3, 21.4:0.2}
+    iprint(d)
 
 
 
@@ -151,10 +158,14 @@ def numberdict_to_str(ndict, dlength,chunk_operation=max):
     return "".join((decorate(ret)))
 
 
+
+
+
+
+
 ########3
 # old coloring stuff
 #########
-
 colorscheme={
         0:0,
         1:0,
