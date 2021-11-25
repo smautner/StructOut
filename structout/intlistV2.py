@@ -102,9 +102,11 @@ def npprint(thing,shareylim=True, **kwargs):
         a  = thing.getrow(i).todense().getA1()
         lprint(a,**kwargs)
 
-def iprint(dic:dict,bins:int = 1000,  **kwargs): # indiscrete print
+def iprint(dic:dict,bins = 1000,spacemin=False, spacemax=False,  **kwargs): # indiscrete print
     keys = np.array(list(dic.keys()))
-    discrete = np.digitize(keys, bins=np.linspace(min(keys), max(keys), bins ) )
+    spacemin =  spacemin or min(keys)
+    spacemax =  spacemax or max(keys)
+    discrete = np.digitize(keys, bins=np.linspace(spacemin, spacemax, bins ) )
 
     base = [min(dic.values())]*(bins+1)
     for k,e in zip(keys,discrete):
