@@ -41,7 +41,8 @@ def determine_characterlimit(values, characterlimit):
 
 def str_to(n):
     #if isinstance(n,int):
-    if 'int' in str(type(n)):
+
+    if type(n) == int:
         return str(n)
     if -10 < n < 10:
         return f"{n:.3f}"
