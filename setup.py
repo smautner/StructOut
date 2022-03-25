@@ -107,7 +107,7 @@ setup(
     description='pretty print data structures',
     #long_description=open('README.md').read(),
     install_requires=[
-        "networkx","scipy"
+        "networkx","scipy", "sty"
     ],
     cmdclass={'sdist': sdist, 'install': install}
 )

@@ -2,7 +2,7 @@
 
 from structout.graph import gprint
 from structout.intlist import dprint
-from structout.intlistV2 import lprint, npprint, iprint
+from structout.intlistV2 import lprint, npprint, iprint,heatmap
 
 
 #def bins(values,minmax=True,length=-1,method='bins',methodhow=16,**kwargs):
