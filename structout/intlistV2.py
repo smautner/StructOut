@@ -141,8 +141,26 @@ def iprint(dic:dict,bins = 1000,spacemin=False, spacemax=False,  **kwargs): # in
     base = [min(dic.values())]*(bins+1)
     for k,e in zip(keys,discrete):
         base[e]=dic[k]
-
     lprint(base, **kwargs)
+
+
+
+def compress2d(m,dim=(10,10),operator = np.max):
+    d0 = min(m.shape[0],dim[0])
+    d1 = min(m.shape[1],dim[1])
+
+    res = np.zeros((d0,d1))
+
+    ir = np.floor(np.linspace(0,m.shape[0],d0+1)).astype(int)
+    jr = np.floor(np.linspace(0,m.shape[1],d1+1)).astype(int)
+    print(ir,jr)
+    for i in range(d0):
+        for j in range(d1):
+            res[i,j] = operator(m[
+                ir[i]:ir[i+1],
+                jr[j]:jr[j+1] ])
+
+    return res
 
 if __name__ == "__main__":
     lprint(range(1000))
@@ -158,7 +176,11 @@ if __name__ == "__main__":
     z=np.random.rand(10,10)
     heatmap(z)
 
+    z=np.random.rand(111,111)
+    heatmap(compress2d(z))
 
+    z=np.random.rand(15,15)
+    heatmap(compress2d(z))
 
 
 
