@@ -68,3 +68,9 @@ pos=None,           # pass a coordinate dictionary ; {nodeid : x,y}
 n_graphs_per_line= 5 # when passing multiple graphs, wrap here
 ```
 
+## heatmap
+
+```
+heatmap(matrix,dim = (20,20),operator= np.max, wide = True)
+```
+wide makes each symbol take up 2 characters.
