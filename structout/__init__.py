@@ -2,7 +2,7 @@
 
 from structout.graph import gprint
 from structout.intlist import dprint
-from structout.intlistV2 import lprint, npprint, iprint
+from structout.intlistV2 import lprint, npprint, iprint, doALine, str_to
 from structout.heatmap import heatmap
 import numpy as np
 
@@ -21,7 +21,9 @@ def hist_CounterBased(values):
 
 def hist(values, bins = 40):
     val = np.histogram(values,density=False, bins = bins)
-    lprint(val[0])
+    print(str_to(min(values)),end = '')
+    print(doALine(val[0],showrange = False), end = '')
+    print(str_to(max(values)))
 
 def testhist():
     hist([1,2,3,4,5,6,10], 40)
