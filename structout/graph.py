@@ -92,8 +92,11 @@ def nx_to_ascii(graph,
 
 
     # set up canvas
-    ymax = size
-    xmax = ymax * 2
+    if isinstance(size,int):
+        ymax = size
+        xmax = ymax * 2
+    else:
+        xmax,ymax = size
     canvas = [list(' ' * (xmax + 1)) for i in range(ymax + 1)]
 
     # layout
@@ -188,10 +191,10 @@ def make_picture(g,
         else:
             print("zoomnodes not supported for multiple graphs")
 
-        
 
 
-    # ZOOM 
+
+    # ZOOM
     g = list(map( lambda gr, no: do_zoom(gr,zoomlevel,no) ,g,zoomnodes))
 
     # set colors
@@ -206,7 +209,7 @@ def make_picture(g,
 
 def do_zoom(gr,zoomlevel, no):
     if not no:
-        return gr 
+        return gr
     oklist = [a for (a, b) in short_paths(gr,no, zoomlevel)]
     return gr.subgraph(oklist)
 
@@ -260,7 +263,7 @@ if __name__ == "__main__":
     ginfo(graph)
     gprint([graph,graph,graph])
 
-''' 
+'''
 getting coordinates of molecules...  the molecule thing should be in the eden package afair
 import molecule
 chem=molecule.nx_to_rdkit(graph)
