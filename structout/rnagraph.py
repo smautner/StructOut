@@ -149,7 +149,8 @@ def getposdict(blob,d, pos, duty):
         # originally i wanted to place them with graphviz but that looks shitty
         ###############
         pos = newpos(pos,d)
-        pos = newpos(pos,targets[0])
+        #pos = newpos(pos,targets[0])
+        pos = newpos(pos,rev[close[d]])
         for i in range(blob[0].start_pos+1,blob[2].start_pos):
             r [i] =  pos
             pos = newpos(pos,close[d])
@@ -157,7 +158,7 @@ def getposdict(blob,d, pos, duty):
     return r
 
 
-def RNAprint(g,structure = None):
+def RNAprint(g,structure = None, size = 1):
     ###
     # get structure annotation right:
     #########
@@ -193,8 +194,8 @@ def RNAprint(g,structure = None):
     a = np.array(list(pos.values()))
     xmin,ymin = a.min(axis = 0)
     xmax,ymax = a.max(axis = 0)
-    xr = int(xmax-xmin)
-    yr = int(ymax-ymin)
+    xr = int(size*(xmax-xmin))
+    yr = int(size*(ymax-ymin))
 
     so.gprint(g, pos = pos, size = (xr*4,yr*2) )
 
