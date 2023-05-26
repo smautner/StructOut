@@ -68,6 +68,29 @@ pos=None,           # pass a coordinate dictionary ; {nodeid : x,y}
 n_graphs_per_line= 5 # when passing multiple graphs, wrap here
 ```
 
+### RNAprint
+```
+                        G.-.G.-.G
+                          -.    -
+                            G.=.G
+                            -   -
+                            G.=.G
+                            -   -
+                            G   G
+                            -   -
+                            G   U.....             .U
+                            -         -.....     .- -
+A.-.A.-.A.-.A.-.A.-.A.-.A.-.A               U.-.U   U
+                =   =   =   =               =   =   -
+        A.-.A.-.A.-.A.-.A.-.A      .U.-.U.-.U.-.U.-.U
+                            -    .-
+                            A.=.A
+                            -   -
+                            A.=.A.
+                              -.  -.
+                                A.-.A
+```
+
 ## heatmap
 
 ```
