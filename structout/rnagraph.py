@@ -170,7 +170,7 @@ def RNAprint(g,structure = None):
         if ch in f')]>':
             return f')'
         return f','
-    stu = Map(nani, stu)
+    stu = f''.join(Map(nani, stu))
 
     ####
     # calculate a possition for every character in the strcuture
