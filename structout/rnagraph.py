@@ -158,7 +158,7 @@ def getposdict(blob,d, pos, duty):
     return r
 
 
-def RNAprint(g,structure = None, size = 1):
+def RNAprint(g,structure = None, size = 1, springlayout_k = .3):
     ###
     # get structure annotation right:
     #########
@@ -186,7 +186,7 @@ def RNAprint(g,structure = None, size = 1):
     #####
     # undocumented nodes get filled by spring layout:
     ########
-    pos = nx.drawing.spring_layout(g, pos =posdict ,fixed = posdict.keys())
+    pos = nx.drawing.spring_layout(g, pos =posdict ,fixed = posdict.keys(), k = springlayout_k)
 
     ##########
     # making sure the graph proportions are ok,  and draw
