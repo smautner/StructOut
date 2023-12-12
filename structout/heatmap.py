@@ -11,6 +11,10 @@ ok so we want to print a numpy array...
 
 def heatmap(matrix,dim = (20,20),operator= np.max, wide = True, legend  = True):
 
+
+    if not np.isfinite(matrix).all():
+        print('WILL NOT DRAW MATRIX, REMOVE NON FINITE VALUES')
+        return
     canvas = compress2d(matrix,dim=dim, operator=operator)
     if wide:
         canvas = makewide(canvas)
@@ -30,6 +34,8 @@ def getlegend(colors):
 
 
 def colorize(matrix,colors, space = np.linspace):
+    if not np.isfinite(matrix).all():
+          raise Exception('matrix contains non finite values')
     mima = matrix.min(), matrix.max()
 
     # we need bins:
