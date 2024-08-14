@@ -104,7 +104,8 @@ setup(
     url='https://github.com/smautner/StructOut_py3',
     license='GPLv3',
     description='pretty print data structures',
-    #long_description=open('README.md').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type = 'text/markdown',
     install_requires=[
         "networkx","scipy", "sty"
     ],
