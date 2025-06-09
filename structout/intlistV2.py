@@ -7,7 +7,9 @@ import math
     rewriting to have better code..
     does not have all the features of intlist yet i think...
 """
-def doALine(values, log = False, chunkF = max,showrange=True, symbols =  '▁▂▃▄▅▆▇█', colors = '0467', ylim = False, characterlimit = 99999):
+def doALine(values, log = False, chunkF = max,
+            showrange=True, symbols =  '▁▂▃▄▅▆▇█', colors = '0467',
+            ylim = False, characterlimit = 99999):
     '''
         ylim should be in htere in case we print many lines
     '''
@@ -15,10 +17,8 @@ def doALine(values, log = False, chunkF = max,showrange=True, symbols =  '▁▂
     values = np.array(values)
     pre, post, space  = determine_characterlimit(values, characterlimit, showrange=showrange)
     values = horizontalsquish(values, space, chunkF)
-
     if log:
         values = np.log2(values)
-
     # -> discretize so we have a low number of symbols
     values = binning(values, count = len(symbols)*len(colors), ylim=ylim)
     symbols = decorate(values, symbols, colors)
@@ -110,6 +110,13 @@ def colorize(chr, col):
 def lprint(values,**kwargs):
     print (doALine(values,**kwargs))
 
+def plot(x,y=False):
+    if isinstance(y,bool):
+        lprint(x)
+    else:
+        scatter(x,y)
+
+
 def npprint(thing,shareylim=True, **kwargs):
     thing = csr(thing)
     if shareylim:
@@ -117,6 +124,7 @@ def npprint(thing,shareylim=True, **kwargs):
     for i in range(thing.shape[0]):
         a  = thing.getrow(i).todense().getA1()
         lprint(a,**kwargs)
+
 def iprint(dic:dict,bins = 1000,spacemin=False, spacemax=False,  **kwargs): # indiscrete print
     keys = np.array(list(dic.keys()))
     spacemin =  spacemin or min(keys)

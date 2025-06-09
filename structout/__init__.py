@@ -2,7 +2,7 @@
 
 from structout.graph import gprint
 from structout.intlist import dprint
-from structout.intlistV2 import lprint, npprint, iprint, doALine, str_to, scatter
+from structout.intlistV2 import lprint, npprint, iprint, doALine, str_to, scatter, plot
 from structout.heatmap import heatmap
 from structout.rnagraph import RNAprint
 import numpy as np
