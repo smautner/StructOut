@@ -26,8 +26,9 @@ def doALine(values, log = False, chunkF = max,showrange=True, symbols =  '▁▂
 
 
 ##########################
-def determine_characterlimit(values, characterlimit, showrange=True):
+def determine_characterlimit(values, characterlimit, showrange=True, ignore_val_len =False):
     '''
+    ignore_val_len: when we print a sequence, it makes sense to limit the output chars, on sparse data we should not
     return:
         pre and post strings and how many characters we can actually use for output
     '''
@@ -39,7 +40,8 @@ def determine_characterlimit(values, characterlimit, showrange=True):
         post=''
     maxlength = getcolumns()-len(pre+post)
     characterlimit -= len(pre+post)
-    space = min(maxlength, len(values))
+
+    space = min(maxlength, len(values)) if not ignore_val_len else maxlength
     return pre, post, space
 
 def str_to(n):
@@ -168,6 +170,93 @@ def numberdict_to_str(ndict, dlength,chunk_operation=max):
     return "".join((decorate(ret)))
 
 
+
+
+def scatter(x,y, xlim=(), ylim=(),rows =2, forcecols = 14):
+    '''
+    - braille will make the core plot.
+    - we add colored xlim left and right bottom
+    - we add colored ylim left and right top
+    '''
+
+    xlim = xlim or (np.min(x),np.max(x))
+    ylim = ylim or (np.min(y), np.max(y))
+    xlim=np.array(xlim)
+    ylim=np.array(ylim)
+    prex, postx, spacex  = determine_characterlimit(xlim, 0000,ignore_val_len=True)
+    prey, posty, spacey  = determine_characterlimit(ylim, 0000,ignore_val_len=True)
+    maxl = lambda x,y: max(len(x),len(y))
+    prelen = maxl(prex, prey)
+    postlen = maxl(postx, posty)
+    spacelen = len(prex+postx)+spacex - prelen - postlen
+    spacelen = forcecols or spacelen
+
+    chars = plot_braille(x,y,cols = spacelen,rows = rows,xlim= xlim,ylim=ylim)
+
+    for i,row in enumerate(chars):
+        # first take care of padding:
+        pre,post = '',''
+        if i ==0:
+            pre,post = prey, posty
+        if i == len(chars)-1:
+            pre,post = prex, postx
+        pre = pre.ljust(prelen)
+        post = post.ljust(postlen)
+
+        if i ==0:
+            pre, post = colorize(pre,'4'), colorize(post,'4')
+        if i == len(chars)-1:
+            pre, post = colorize(pre,'6'), colorize(post,'6')
+
+        print(pre+row+post)
+
+
+
+# 1 4
+# 2 5
+# 3 6
+# 7 8
+DOT_POS = {
+    (0, 0): 0, (0, 1): 1, (0, 2): 2, (0, 3): 6,
+    (1, 0): 3, (1, 1): 4, (1, 2): 5, (1, 3): 7
+}
+def plot_braille(x, y, rows=20, cols=40, xlim=(),ylim=()):
+    if len(x) != len(y):
+        raise ValueError("x and y must be the same length")
+
+    # Scale data into pixel coordinates (cols*2 wide, rows*4 tall)
+    x = np.asarray(x)
+    y = -np.asarray(y)
+    ylim = -ylim[::-1]
+
+    # 2x4 pixel grid per Braille character
+    width_px = cols * 2
+    height_px = rows * 4
+    x_bins = np.linspace(*xlim, width_px + 1)
+    y_bins = np.linspace(*ylim, height_px + 1)
+
+    x_idx = np.digitize(x, x_bins) - 1
+    y_idx = np.digitize(y, y_bins) - 1
+
+    # Clamp to grid bounds
+    x_idx = np.clip(x_idx, 0, width_px - 1)
+    y_idx = np.clip(y_idx, 0, height_px - 1)
+
+
+    # Initialize Braille canvas
+    canvas = np.zeros((rows, cols), dtype=np.uint8)
+
+    for xi, yi in zip(x_idx, y_idx):
+        char_col = xi // 2
+        char_row = yi // 4
+        dot_col = xi % 2
+        dot_row = yi % 4
+
+        dot_bit = DOT_POS[(dot_col, dot_row)]
+        canvas[char_row, char_col] |= (1 << dot_bit)
+
+    chars = ["".join(chr(0x2800 + cell) if cell else ' ' for cell in row) for row in canvas]
+    return chars
 
 
 
