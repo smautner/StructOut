@@ -20,11 +20,12 @@ def hist_CounterBased(values):
     val  = [counts.get(i,0) for i in range(min(k), max(k)+1)]
     lprint(val)
 
-def hist(values, bins = 40):
-    val = np.histogram(values,density=False, bins = bins)
-    print(str_to(min(values)),end = '')
-    print(doALine(val[0],showrange = False), end = '')
-    print(str_to(max(values)))
+def hist(values, bins = 40, xlim=None):
+    val = np.histogram(values,density=False, bins = bins, range = xlim)
+
+    print(str_to(min(values) if not xlim else xlim[0]),end = '|')
+    print(doALine(val[0],showrange = False), end = '|')
+    print(str_to(max(values) if not xlim else xlim[1]))
 
 def testhist():
     hist([1,2,3,4,5,6,10], 40)

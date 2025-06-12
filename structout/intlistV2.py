@@ -44,7 +44,76 @@ def determine_characterlimit(values, characterlimit, showrange=True, ignore_val_
     space = min(maxlength, len(values)) if not ignore_val_len else maxlength
     return pre, post, space
 
-def str_to(n):
+
+
+def str_to(num: float) -> str:
+    """
+    copy pasta seems to work...
+    Expresses a float in a string of exactly 5 characters.
+
+    The function finds the best representation (integer, decimal, or scientific)
+    that is at most 5 characters long, and then pads it with spaces to
+    ensure the final string is exactly 5 characters.
+
+    Args:
+        num: The float number to express.
+
+    Returns:
+        A string representation of the number, 5 characters long.
+    """
+    # This variable will hold the generated string before padding
+    result = ""
+
+    # 1. Handle special cases first
+    if math.isnan(num):
+        result = "nan"
+    elif math.isinf(num):
+        result = "inf" if num > 0 else "-inf"
+    elif num == 0:
+        result = "0"
+    else:
+        # This variable will be set once a suitable representation is found
+        found_rep = None
+
+        # 2. Try simple integer representation
+        if num == int(num):
+            s_int = str(int(num))
+            if len(s_int) <= 5:
+                found_rep = s_int
+
+        # 3. Try fixed-point decimal notation (if integer didn't work)
+        if found_rep is None:
+            for precision in range(4, -1, -1):
+                s_float = f"{num:.{precision}f}"
+                if -1 < num < 1:
+                    s_float = s_float.lstrip('0') if num > 0 else "-" + s_float[2:]
+
+                if len(s_float) <= 5:
+                    found_rep = s_float.rstrip('.')
+                    break # Exit loop once a representation is found
+
+        # 4. Fallback to scientific notation
+        if found_rep is None:
+            for precision in range(2, -1, -1):
+                s_sci = f"{num:.{precision}e}".replace('e+', 'e')
+                if len(s_sci) <= 5:
+                    found_rep = s_sci
+                    break
+
+        # 5. Absolute last resort
+        if found_rep is None:
+            s_sci_final = f"{num:.0e}".replace('e+', 'e')
+            found_rep = s_sci_final[:5]
+
+        result = found_rep
+
+    # Pad with spaces if the length is smaller than 5
+    return result.ljust(5)
+
+
+
+def str_to_old(n):
+    # return f"{n:.5g}"
     #if isinstance(n,int):
 
     if type(n) == int:
@@ -180,7 +249,7 @@ def numberdict_to_str(ndict, dlength,chunk_operation=max):
 
 
 
-def scatter(x,y, xlim=(), ylim=(),rows =2, forcecols = 14):
+def scatter(x,y, xlim=(), ylim=(),rows =2, columns = 14):
     '''
     - braille will make the core plot.
     - we add colored xlim left and right bottom
@@ -197,7 +266,7 @@ def scatter(x,y, xlim=(), ylim=(),rows =2, forcecols = 14):
     prelen = maxl(prex, prey)
     postlen = maxl(postx, posty)
     spacelen = len(prex+postx)+spacex - prelen - postlen
-    spacelen = forcecols or spacelen
+    spacelen = columns or spacelen
 
     chars = plot_braille(x,y,cols = spacelen,rows = rows,xlim= xlim,ylim=ylim)
 
