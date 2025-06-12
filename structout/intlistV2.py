@@ -301,6 +301,11 @@ def plot_braille(x, y, rows=20, cols=40, xlim=(),ylim=()):
     if len(x) != len(y):
         raise ValueError("x and y must be the same length")
 
+    if len(ylim)==0:
+        ylim = np.array((min(y), max(y)))
+
+    if len(xlim)==0:
+        xlim = np.array((min(x), max(x)))
     # Scale data into pixel coordinates (cols*2 wide, rows*4 tall)
     x = np.asarray(x)
     y = -np.asarray(y)
