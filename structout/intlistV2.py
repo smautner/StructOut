@@ -141,10 +141,14 @@ if __name__ == "__main__":
 #############
 # legacy stuff for dictionaries...
 # i am rewriring this now  and this is not a current usecase
-# the solution should be to use csr_sparse in the future
+# the solution should use csr_sparse in the future
 #############
 def dprint(posdict,length=100, chunk_operation=max):
     print (numberdict_to_str(posdict,length, chunk_operation=chunk_operation))
+
+def numberdict_to_str(ndict, dlength,chunk_operation=max):
+    ret =  resize_number_dict(ndict, desired_length=dlength,chunk_operation=chunk_operation)
+    return "".join((decorate(ret)))
 
 def access_region(d,start,end):
     return [ v for pos,v in d.items() if start<=pos<=end  ]
@@ -163,9 +167,6 @@ def resize_number_dict(posdict, desired_length,chunk_operation=max):
     return posdict
 
 
-def numberdict_to_str(ndict, dlength,chunk_operation=max):
-    ret =  resize_number_dict(ndict, desired_length=dlength,chunk_operation=chunk_operation)
-    return "".join((decorate(ret)))
 
 
 
