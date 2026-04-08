@@ -97,3 +97,19 @@ A.-.A.-.A.-.A.-.A.-.A.-.A.-.A               U.-.U   U
 heatmap(matrix,dim = (20,20),operator= np.max, wide = True)
 ```
 wide makes each symbol take up 2 characters.
+
+
+## scatter
+```
+ so.plot([0,0.5,2,3], [1,2,5,4])
+1    |         ⠁   ⠠|5
+0    |⡀ ⠄           |3
+```
+scatter(x,y, xlim=(), ylim=(),rows =2, columns = 14)
+
+
+```
+so.plot([1,2,3])
+1    |▁▄█|3
+```
+

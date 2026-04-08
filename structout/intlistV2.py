@@ -179,11 +179,11 @@ def colorize(chr, col):
 def lprint(values,**kwargs):
     print (doALine(values,**kwargs))
 
-def plot(x,y=False):
+def plot(x,y=False, **z):
     if isinstance(y,bool):
-        lprint(x)
+        lprint(x,**z)
     else:
-        scatter(x,y)
+        scatter(x,y,**z)
 
 
 def npprint(thing,shareylim=True, **kwargs):
