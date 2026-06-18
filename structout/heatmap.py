@@ -1,17 +1,25 @@
+from __future__ import annotations
+
 import numpy as np
 
+"""Terminal heatmap rendering for 2D numpy arrays using viridis color palette."""
 
-'''
-ok so we want to print a numpy array...
+def heatmap(
+    matrix: np.ndarray,
+    dim: tuple[int, int] = (20, 20),
+    operator: callable = np.max,
+    wide: bool = True,
+    legend: bool = True,
+) -> None:
+    """Compress a 2D matrix and print it as a colorized terminal heatmap.
 
-- compress
-- color it
-
-'''
-
-def heatmap(matrix,dim = (20,20),operator= np.max, wide = True, legend  = True):
-
-
+    Args:
+        matrix: 2D numeric array to visualize.
+        dim: Target dimensions (rows, cols) for the compressed output.
+        operator: Reduction function applied to each block during compression.
+        wide: If True, double each column for a wider display.
+        legend: If True, print a color legend with min/max values.
+    """
     if not np.isfinite(matrix).all():
         print('WILL NOT DRAW MATRIX, REMOVE NON FINITE VALUES')
         return
@@ -27,13 +35,38 @@ def heatmap(matrix,dim = (20,20),operator= np.max, wide = True, legend  = True):
     if legend:
         print(canvas.min(),getlegend(colors),canvas.max())
 
-def getlegend(colors):
-    return colorize(np.matrix(np.linspace(0,1,40)),colors)
+def getlegend(colors: list[list[float]]) -> str:
+    """Return a colorized gradient bar for use as a legend.
+
+    Args:
+        colors: List of RGB triples (each 0-1) defining the color map.
+
+    Returns:
+        A string representing the gradient bar.
+    """
+    return colorize(np.linspace(0, 1, 40).reshape(1, -1), colors)
 
 
 
 
-def colorize(matrix,colors, space = np.linspace):
+def colorize(
+    matrix: np.ndarray,
+    colors: list[list[float]],
+    space: callable = np.linspace,
+) -> str:
+    """Map numeric values in a matrix to ANSI color blocks.
+
+    Args:
+        matrix: 2D numeric array to colorize.
+        colors: List of RGB triples (each 0-1) defining available colors.
+        space: Function to generate evenly-spaced bin edges (default np.linspace).
+
+    Returns:
+        A multi-line string where each character is a colored block.
+
+    Raises:
+        Exception: If the matrix contains non-finite values.
+    """
     if not np.isfinite(matrix).all():
           raise Exception('matrix contains non finite values')
     mima = matrix.min(), matrix.max()
@@ -44,20 +77,52 @@ def colorize(matrix,colors, space = np.linspace):
 
     return '\n'.join([ ''.join(map(lambda x: color(x,colors),row)) for row in digitized])
 
-def color(x, colors):
+def color(x: int, colors: list[list[float]]) -> str:
+    """Return an ANSI-colored block character for a given color index.
+
+    Args:
+        x: Index into the colors list (clamped by np.digitize).
+        colors: List of RGB triples (each 0-1) defining available colors.
+
+    Returns:
+        A string containing an ANSI 24-bit color escape sequence followed by a block.
+    """
     rgb = ';'.join([ str(int(c*255)) for c in colors[x]])
     return "\x1b[38;2;" + rgb + 'm█\x1b[0m'
 
 
-def makewide(matrix):
-        canvas = np.empty((matrix.shape[0], matrix.shape[1]*2))
-        for row in range(matrix.shape[0]):
-            for column in range(matrix.shape[1]):
-                canvas[row,column*2] = matrix[row,column]
-                canvas[row,column*2+1] = matrix[row,column]
-        return canvas
+def makewide(matrix: np.ndarray) -> np.ndarray:
+    """Double each column of a matrix to create a wider display.
 
-def compress2d(m,dim=(10,10),operator = np.max):
+    Args:
+        matrix: 2D numeric array to widen.
+
+    Returns:
+        A new array with each column duplicated horizontally.
+    """
+    canvas = np.empty((matrix.shape[0], matrix.shape[1]*2))
+    for row in range(matrix.shape[0]):
+        for column in range(matrix.shape[1]):
+            canvas[row,column*2] = matrix[row,column]
+            canvas[row,column*2+1] = matrix[row,column]
+    return canvas
+
+def compress2d(
+    m: np.ndarray,
+    dim: tuple[int, int] = (10, 10),
+    operator: callable = np.max,
+) -> np.ndarray:
+    """Downsample a 2D matrix by applying a reduction operator to blocks.
+
+    Args:
+        m: 2D numeric array to compress.
+        dim: Maximum target dimensions (rows, cols) for the output.
+        operator: Reduction function applied to each block during compression.
+
+    Returns:
+        A new array with dimensions at most *dim*, where each element is the
+        result of applying *operator* to the corresponding block in *m*.
+    """
     d0 = min(m.shape[0],dim[0])
     d1 = min(m.shape[1],dim[1])
     res = np.zeros((d0,d1))
@@ -69,21 +134,4 @@ def compress2d(m,dim=(10,10),operator = np.max):
                 ir[i]:ir[i+1],
                 jr[j]:jr[j+1] ])
     return res
-
-if __name__ == "__main__":
-
-    z=np.random.rand(10,10)
-    heatmap(z)
-
-    z=np.random.rand(111,111)
-    heatmap(compress2d(z))
-
-    z=np.random.rand(15,15)
-    heatmap(compress2d(z))
-
-    z=np.random.rand(14,1)
-    heatmap(compress2d(z))
-    # USE THIS AND .columns to get size of the matrix :)
-    #os.get_terminal_size().lines
-
 

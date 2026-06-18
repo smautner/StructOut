@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from __future__ import absolute_import
-from __future__ import print_function
 
 import os
 import sys
@@ -38,7 +36,7 @@ def update_version_py():
     if p.returncode != 0:
         print("unable to run git, leaving structout/__version__.py alone")
         return
-    ver = "0.1."+stdout.strip()
+    ver = "0.2."+stdout.strip()
     #ver = str(int(ver,16)) # pypi doesnt like base 16
     f = open("structout/__version__.py", "w")
     f.write(VERSION_PY % ver)
@@ -72,26 +70,6 @@ class install(_install):
     def run(self):
         _install.run(self)
 
-    def checkProgramIsInstalled(self, program, args, where_to_download,
-                                affected_tools):
-        try:
-            subprocess.Popen([program, args], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-            return True
-        except EnvironmentError:
-            # handle file not found error.
-            # the config file is installed in:
-            msg = "\n**{0} not found. This " \
-                  "program is needed for the following "\
-                  "tools to work properly:\n"\
-                  " {1}\n"\
-                  "{0} can be downloaded from here:\n " \
-                  " {2}\n".format(program, affected_tools,
-                                  where_to_download)
-            sys.stderr.write(msg)
-
-        except Exception as e:
-            sys.stderr.write("Error: {}".format(e))
-
 setup(
     name='structout',
     version=get_version(),
@@ -107,7 +85,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type = 'text/markdown',
     install_requires=[
-        "networkx","scipy", "sty"
+        "networkx","numpy","scipy","lmz"
     ],
     cmdclass={'sdist': sdist, 'install': install}
 )

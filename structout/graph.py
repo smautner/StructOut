@@ -1,30 +1,51 @@
+from __future__ import annotations
+
 import math
+from typing import Any, Sequence
 import networkx as nx
 from pprint import pprint
 from networkx.algorithms.shortest_paths.unweighted import _single_shortest_path_length as short_paths
 
+COLORDICT: dict[str, int] = {
+    'black': 0, 'red': 1, 'green': 2, 'yellow': 3,
+    'blue': 4, 'cyan': 6, 'magenta': 5, 'gray': 7,
+}
 
-#########
-# set labels and color them
-#########
 
-def color(symbol, col='red', colordict={'black': 0, 'red': 1,
-             'green': 2,
-             'yellow': 3,
-             'blue': 4,
-             'cyan': 6,
-             'magenta': 5,
-             'gray': 7}):
-    '''http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python'''
+def color(symbol: Sequence[str], col: str = 'red', colordict: dict[str, int] | None = None) -> list[str]:
+    """Wrap each string in ANSI color escape codes.
+
+    Args:
+        symbol: Strings to colorize.
+        col: Color name (key in colordict).
+        colordict: Custom color-name-to-index mapping.
+
+    Returns:
+        List of ANSI-escaped strings.
+    """
+    if colordict is None:
+        colordict = COLORDICT
     return ['\x1b[1;3%d;48m%s\x1b[0m' % (colordict[col], e) for e in symbol]
 
 
 
-def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label'):
-    '''
-    g.graph[xx] are settings for how the lines between nodes (or edge-labels) are drawn
-    node/edege['asciisymbol']  is what is the label how it will be drawn
-    '''
+def set_print_symbol(
+    g: nx.Graph,
+    colorstyle: str | list[Sequence[str]] = 'normal',
+    nodelabel: str = 'label',
+    edgelabel: str = 'label',
+) -> nx.Graph:
+    """Assign ASCII display symbols to nodes and edges based on color style.
+
+    Args:
+        g: NetworkX graph to annotate with display symbols.
+        colorstyle: Color scheme; 'normal', 'bw', or list of node groups.
+        nodelabel: Node attribute key to use as display label.
+        edgelabel: Edge attribute key to use as display label.
+
+    Returns:
+        The same graph with ``asciisymbol`` attributes set on nodes/edges.
+    """
     g.graph['generic edge'] =  "." if colorstyle=='bw' else color('.', 'gray')[0]
     g.graph['digraphend'] =  color('.', col='blue')[0]
     g.graph['colored'] = colorstyle!='bw'
@@ -65,7 +86,21 @@ def set_print_symbol(g, colorstyle='normal', nodelabel='label', edgelabel='label
 ###
 
 
-def transform_coordinates(pos,ymax,xmax):
+def transform_coordinates(
+    pos: dict[Any, tuple[float, float]],
+    ymax: int,
+    xmax: int,
+) -> dict[Any, tuple[int, int]]:
+    """Normalize node positions to fit within a given canvas size.
+
+    Args:
+        pos: Mapping of node to ``(x, y)`` float coordinates.
+        ymax: Maximum y dimension of the target canvas.
+        xmax: Maximum x dimension of the target canvas.
+
+    Returns:
+        The same ``pos`` dict with coordinates scaled to integer grid positions.
+    """
     weird_maxx = max([x for (x, y) in pos.values()])
     weird_minx = min([x for (x, y) in pos.values()])
     weird_maxy = max([y for (x, y) in pos.values()])
@@ -76,19 +111,26 @@ def transform_coordinates(pos,ymax,xmax):
     for key in pos.keys():
         wx, wy = pos[key]
         pos[key] = (int((wx - weird_minx) / xfac), int((wy - weird_miny) / yfac))
-        #pos["debug_%d" % key] = [wx,xfac,weird_minx,weird_maxx, wy,yfac,weird_miny, weird_maxy]
     return pos
 
 
-def nx_to_ascii(graph,
-                size=10,
-                debug=None,
-                pos=None):
-    '''
-        debug would be a path to the folder where we write the dot file.
-        in: nxgraph, (see set print symbol for special fields)
-        out: a string
-    '''
+def nx_to_ascii(
+    graph: nx.Graph,
+    size: int | tuple[int, int] = 10,
+    debug: str | None = None,
+    pos: dict[Any, tuple[float, float]] | None = None,
+) -> str:
+    """Render a NetworkX graph as an ASCII string.
+
+    Args:
+        graph: NetworkX graph with ``asciisymbol`` attributes on nodes/edges.
+        size: Canvas height, or ``(width, height)`` tuple.
+        debug: If set, write a ``.dot`` file to this directory.
+        pos: Pre-computed node positions; uses spring layout when ``None``.
+
+    Returns:
+        Multi-line string representing the graph in ASCII art.
+    """
 
 
     # set up canvas
@@ -101,8 +143,6 @@ def nx_to_ascii(graph,
 
     # layout
     if not pos:
-        #pos = nx.graphviz_layout(graph, prog='neato', args="-Gratio='2'")
-        #pos=nx.drawing.nx_agraph.graphviz_layout(graph, prog='neato', args="-Gratio='2'")
         pos=nx.spring_layout(graph)
 
     pos= transform_coordinates(pos,ymax,xmax)
@@ -145,7 +185,7 @@ def nx_to_ascii(graph,
                 canvas[y][x] = graph.graph['generic edge'] #"." if colorstyle=='bw' else color('.', 'black')[0]
                 lastwritten_edge=(y,x)
 
-        if lastwritten_edge and graph.graph.get('colored',False) and type(graph)==nx.DiGraph:
+        if lastwritten_edge and graph.graph.get('colored', False) and isinstance(graph, nx.DiGraph):
                 canvas[lastwritten_edge[0]][lastwritten_edge[1]] = graph.graph['digraphend']
 
 
@@ -164,27 +204,46 @@ def nx_to_ascii(graph,
 # main printers
 #######
 
-def make_picture(g,
-                 color="normal",
-                 nodelabel='label',
-                 edgelabel='label',
-                 size=10,
-                 debug=None,
-                 pos=None,
-                 zoomlevel = 4,
-                 zoomnodes = [],
-                 n_graphs_per_line= 5):
+def make_picture(
+    g: nx.Graph | list[nx.Graph],
+    color: str | list[str] = "normal",
+    nodelabel: str = 'label',
+    edgelabel: str = 'label',
+    size: int | tuple[int, int] = 10,
+    debug: str | None = None,
+    pos: dict[Any, tuple[float, float]] | None = None,
+    zoomlevel: int = 4,
+    zoomnodes: list[Any] = [],
+    n_graphs_per_line: int = 5,
+) -> str:
+    """Produce a tiled ASCII picture of one or more graphs.
+
+    Args:
+        g: Single graph or list of graphs to render.
+        color: Color style or list of styles (one per graph).
+        nodelabel: Node attribute key for display labels.
+        edgelabel: Edge attribute key for display labels.
+        size: Canvas size passed to ``nx_to_ascii``.
+        debug: Directory path for ``.dot`` debug output.
+        pos: Pre-computed node positions.
+        zoomlevel: Hop distance for zoom subgraph extraction.
+        zoomnodes: Nodes around which to zoom (per graph).
+        n_graphs_per_line: Number of graphs per row in tiled output.
+
+    Returns:
+        Tiled ASCII string of all graphs.
+    """
 
 
 
     # everything musst be lists:
-    if type(g) != list:
+    if not isinstance(g, list):
         g = [g]
         color = [color]
         zoomnodes= [zoomnodes]
     else:
         # g is already a list
-        if type(color) !=list:
+        if not isinstance(color, list):
             color = [color]*len(g)
         if len(zoomnodes) == 0:
             zoomnodes= [[]]*len(g)
@@ -207,7 +266,18 @@ def make_picture(g,
     return makerows(list(g), n_graphs_per_line=n_graphs_per_line)
 
 
-def do_zoom(gr,zoomlevel, no):
+def do_zoom(gr: nx.Graph, zoomlevel: int, no: list[Any]) -> nx.Graph:
+    """Return a subgraph of nodes within ``zoomlevel`` hops of ``no``.
+
+    Args:
+        gr: Source graph.
+        zoomlevel: Maximum shortest-path distance from zoom nodes.
+        no: List of center nodes to zoom around. Returns the full graph
+            if empty.
+
+    Returns:
+        Subgraph containing only nodes within the zoom radius.
+    """
     if not no:
         return gr
     oklist = [a for (a, b) in short_paths(gr,no, zoomlevel)]
@@ -217,7 +287,16 @@ def do_zoom(gr,zoomlevel, no):
 #  down here is utility stuff
 #################################
 
-def makerows(graph_canvazes, n_graphs_per_line=5):
+def makerows(graph_canvazes: list[str], n_graphs_per_line: int = 5) -> str:
+    """Arrange multiple ASCII graph canvases into side-by-side rows.
+
+    Args:
+        graph_canvazes: List of multi-line ASCII strings (one per graph).
+        n_graphs_per_line: Maximum graphs per output row.
+
+    Returns:
+        Single multi-line string with graphs tiled horizontally.
+    """
 
     allrows = ''
     while graph_canvazes:
@@ -232,11 +311,22 @@ def makerows(graph_canvazes, n_graphs_per_line=5):
 
     return allrows
 
-def gprint(g, **kwargs):
+def gprint(g: nx.Graph | list[nx.Graph], **kwargs: Any) -> None:
+    """Print the ASCII picture of a graph (or list of graphs).
+
+    Args:
+        g: Graph or list of graphs to print.
+        **kwargs: Additional keyword arguments forwarded to ``make_picture``.
+    """
     print(make_picture(g, **kwargs))
 
-def ginfo(g):
+def ginfo(g: nx.Graph) -> None:
+    """Print node and edge attributes of a graph.
 
+    Args:
+        g: NetworkX graph to inspect.  ``asciisymbol`` attributes are
+            stripped before printing.
+    """
     for n,d in g.nodes(data=True):
         d.pop('asciisymbol',None)
         print (n,)
@@ -245,28 +335,3 @@ def ginfo(g):
         d.pop('asciisymbol',None)
         print (a,b,)
         pprint (d)
-
-
-# test
-if __name__ == "__main__":
-    # simple graph without labels or anything
-    graph = nx.path_graph(5)
-    gprint(graph)
-
-    # adding some labels
-    graph[3][4]['label']='brot'
-    graph.nodes[0]['label']='null'
-    gprint(graph)
-
-    # grouping nodes for coloring ..
-    gprint(graph, color=([1,2,3],[4,0]))
-    ginfo(graph)
-    gprint([graph,graph,graph])
-
-'''
-getting coordinates of molecules...  the molecule thing should be in the eden package afair
-import molecule
-chem=molecule.nx_to_rdkit(graph)
-m.GetConformer().GetAtomPosition(0)
-transform coordinates
-'''
