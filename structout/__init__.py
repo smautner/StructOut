@@ -7,7 +7,7 @@ characters.
 
 from structout.graph import gprint, ginfo
 from structout.intlist import dprint
-from structout.intlist import lprint, npprint, iprint, doALine, str_to, scatter, plot, plot_braille, colorize
+from structout.intlist import lprint, npprint, iprint, render_sparkline, str_to, scatter, plot, plot_braille, colorize
 from structout.heatmap import heatmap
 from structout.rna import RNAprint
 import numpy as np

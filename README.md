@@ -27,7 +27,7 @@ so.gprint(g)
 ### Sparklines
 
 ```python
-so.lprint(range(1000))
+so.lprint(range(1000), ylim=(0, 1000))
 ```
 ```
 0    |▁▁▁▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▂▂▂▂▃▃▃▃▃▃▃▃▃▃▃▄▄▄▄▄▄▄▄▄▄▄▅▅▅▅▅▅▅▅▅▅▅▆▆▆▆▆▆▆▆▆▆▆▇▇▇▇▇▇▇▇▇▇▇███████████|999
@@ -50,15 +50,15 @@ so.lprint(range(1000), showrange=False)
 ### Full API
 
 ```python
-doALine(
+render_sparkline(
     values,                # numeric array to visualize
     log=False,             # apply log2 scaling
-    chunkF=max,            # aggregation function for downsampling
+    chunk_operation=max,   # aggregation function for downsampling
     showrange=True,        # show min/max labels
     symbols='▁▂▃▄▅▆▇█',   # block characters (low to high)
     colors='0467',         # ANSI color codes
     ylim=False,            # fixed y-range as (min, max), or False for auto
-    characterlimit=9999,   # max output width
+    characterlimit=99999,  # max output width
 )
 ```
 
@@ -147,7 +147,7 @@ so.gprint(g, color='bw')
 
 ```python
 g = nx.path_graph(10)
-so.gprint(g, zoomlevel=2, zoomnodes=[5])
+so.gprint(g, radius=2, zoom_nodes=[5])
 ```
 ```
        .5

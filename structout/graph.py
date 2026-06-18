@@ -212,8 +212,8 @@ def make_picture(
     size: int | tuple[int, int] = 10,
     debug: str | None = None,
     pos: dict[Any, tuple[float, float]] | None = None,
-    zoomlevel: int = 4,
-    zoomnodes: list[Any] = [],
+    radius: int = 4,
+    zoom_nodes: list[Any] = [],
     n_graphs_per_line: int = 5,
 ) -> str:
     """Produce a tiled ASCII picture of one or more graphs.
@@ -226,8 +226,8 @@ def make_picture(
         size: Canvas size passed to ``nx_to_ascii``.
         debug: Directory path for ``.dot`` debug output.
         pos: Pre-computed node positions.
-        zoomlevel: Hop distance for zoom subgraph extraction.
-        zoomnodes: Nodes around which to zoom (per graph).
+        radius: Hop distance for zoom subgraph extraction.
+        zoom_nodes: Nodes around which to zoom (per graph).
         n_graphs_per_line: Number of graphs per row in tiled output.
 
     Returns:
@@ -240,21 +240,21 @@ def make_picture(
     if not isinstance(g, list):
         g = [g]
         color = [color]
-        zoomnodes= [zoomnodes]
+        zoom_nodes= [zoom_nodes]
     else:
         # g is already a list
         if not isinstance(color, list):
             color = [color]*len(g)
-        if len(zoomnodes) == 0:
-            zoomnodes= [[]]*len(g)
+        if len(zoom_nodes) == 0:
+            zoom_nodes= [[]]*len(g)
         else:
-            print("zoomnodes not supported for multiple graphs")
+            print("zoom_nodes not supported for multiple graphs")
 
 
 
 
     # ZOOM
-    g = list(map( lambda gr, no: do_zoom(gr,zoomlevel,no) ,g,zoomnodes))
+    g = list(map( lambda gr, no: do_zoom(gr,radius,no) ,g,zoom_nodes))
 
     # set colors
     g = list(map(lambda x, col: set_print_symbol(x, colorstyle=col, nodelabel=nodelabel, edgelabel=edgelabel), g, color))
@@ -266,12 +266,12 @@ def make_picture(
     return makerows(list(g), n_graphs_per_line=n_graphs_per_line)
 
 
-def do_zoom(gr: nx.Graph, zoomlevel: int, no: list[Any]) -> nx.Graph:
-    """Return a subgraph of nodes within ``zoomlevel`` hops of ``no``.
+def do_zoom(gr: nx.Graph, radius: int, no: list[Any]) -> nx.Graph:
+    """Return a subgraph of nodes within ``radius`` hops of ``no``.
 
     Args:
         gr: Source graph.
-        zoomlevel: Maximum shortest-path distance from zoom nodes.
+        radius: Maximum shortest-path distance from zoom nodes.
         no: List of center nodes to zoom around. Returns the full graph
             if empty.
 
@@ -280,7 +280,7 @@ def do_zoom(gr: nx.Graph, zoomlevel: int, no: list[Any]) -> nx.Graph:
     """
     if not no:
         return gr
-    oklist = [a for (a, b) in short_paths(gr,no, zoomlevel)]
+    oklist = [a for (a, b) in short_paths(gr,no, radius)]
     return gr.subgraph(oklist)
 
 #################################

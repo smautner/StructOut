@@ -15,10 +15,10 @@ DOT_POS: dict[tuple[int, int], int] = {
 }
 
 
-def doALine(
+def render_sparkline(
     values: np.ndarray,
     log: bool = False,
-    chunkF: Callable[..., object] = max,
+    chunk_operation: Callable[..., object] = max,
     showrange: bool = True,
     symbols: str = '▁▂▃▄▅▆▇█',
     colors: str = '0467',
@@ -30,7 +30,7 @@ def doALine(
     Args:
         values: Numeric array to visualize.
         log: If True, apply log2 scaling before binning.
-        chunkF: Aggregation function used when downsampling to fit the character limit.
+        chunk_operation: Aggregation function used when downsampling to fit the character limit.
         showrange: If True, prepend and append the min/max range to the output.
         symbols: Block characters ordered from low to high intensity.
         colors: Single-character ANSI color codes to combine with symbols.
@@ -42,7 +42,7 @@ def doALine(
     """
     values = np.array(values)
     pre, post, space = determine_characterlimit(values, characterlimit, showrange=showrange)
-    values = horizontalsquish(values, space, chunkF)
+    values = horizontalsquish(values, space, chunk_operation)
     if log:
         values = np.log2(values)
     values = binning(values, count=len(symbols) * len(colors), ylim=ylim)
@@ -245,9 +245,9 @@ def lprint(values: np.ndarray, **kwargs: object) -> None:
 
     Args:
         values: Numeric array to visualize.
-        **kwargs: Additional keyword arguments passed to :func:`doALine`.
+        **kwargs: Additional keyword arguments passed to :func:`render_sparkline`.
     """
-    print(doALine(values, **kwargs))
+    print(render_sparkline(values, **kwargs))
 
 
 def plot(x: np.ndarray, y: np.ndarray | bool = False, **z: object) -> None:
